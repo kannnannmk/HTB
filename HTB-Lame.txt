@@ -1,0 +1,19 @@
+1. Normal Nmap command on the target 
+   nmap -sC -sC -p- -A <target>
+2. List of ports open are
+   SMB port - Samba 3.x to 4.x --> Port 139
+   Open SSH - Not vulnerable  --> Port 22
+   vsftpd 2.3.4 --> Port 21
+
+   vsftpd has exploit available for its version 2.3.4. But is is not working since 
+   it accepts only anonymous login
+
+3. Trying out exploit for SMB - Samba 3.x to 4.x (3.0.20 as per scan results)
+
+Using "searchspolit Samba 3.0" we have found the exploit and got CVE via google.
+
+Use this payload https://github.com/amriunix/CVE-2007-2447
+
+Makesure to download pySMB via pip before running the exploit
+
+Mention the LHOST LPORT RHOST RPORT,  listen in NC, now we got root and flag in root.txt

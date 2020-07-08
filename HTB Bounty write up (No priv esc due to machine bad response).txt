@@ -1,0 +1,32 @@
+1. Run the intensive nmap 
+nmap -sC -sV -A -p- <target ip>
+
+resulted in Microsoft IIS httpd 7.5 at port 80
+
+Since it is IIS, so there is possibility for the existance of directories
+.asp, .aspx., .html. So we use gobuster for directory brut forcing. 
+
+2. Parallely run a gobuster scan using below command
+
+gobuster dir -u http://10.10.10.93 -w /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt 
+-t 30 -x .aspx,.asp,.html
+
+3. We have found page at /transfer.aspx there we can upload the files.
+
+Since it is .aspx, we try uploading and web.config files 
+
+the web.config file has filetransfer command for reverse shell psbounty.ps1
+
+so we just uploaded the web.config, that transfers .ps1 powershell script
+(find the web.config and powerup.ps1 exploit in github) that givers reverse shell
+
+there we can find 'whoami /privall' or systeminfo to get configuration
+
+we can either use exploit based on system or JuicyPotato.exe 
+
+This machine was hanging after this process, so not able to proceed
+
+
+
+
+Exploit to use:  https://github.com/abatchy17/WindowsExploits , download MSF

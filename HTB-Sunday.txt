@@ -130,11 +130,11 @@ create bash script in target and name it as 'troll'
 
 with content 
 
-"#!/usr/bash/bin"
+"#!/bin/bash    
 
-              bash
+ bash
 
-              "
+"
 
 User python file transfer and wget to get this 'troll' file and pass it to target '/root/troll' --> as Sammy user
 

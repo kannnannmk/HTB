@@ -1,0 +1,15 @@
+Simple exploitation using Telnet and James exploit
+We can login as root via telnet using root:root credentials
+telnet 10.10.10.51 4555 //James 2.3.2 open in this port
+Here we can set password for all users
+telnet 10.10.10.51 110 // POP3 server, where we can login as normal user
+We can find Mindy user's SSH password
+Login as mindy using SSH
+ss mindy@10.10.10.51 sh
+sh is used to get an interactive shell
+cd into /temp
+execute '/bin/dash' --> we are root
+
+Refer IPPSEC and other walkthrough.
+
+I can complete only half of the machine, as machine doesn't respond with interactive shell when using sh or bash command

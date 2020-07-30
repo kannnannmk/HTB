@@ -1,0 +1,25 @@
+1. Nmap scan reveals application using HFS 2.3 service is used 
+2. Using Searchsploit and as well as google reveals us an exploit for reverse
+
+Instructions to use exploit
+
+1. Change local ip and local port in .py exploit
+2. Download 64-bit netcat executable nc.exe in same directory
+3. start python server
+4. listen to local port using netcat
+5. netcat gives us an user shell
+6. use >systeminfo => Copy output to .txt file
+7. Use this file to run windows-exploit-suggester.py
+8. It suggests us an exploit ms16-098
+Goto exploit-db page of this exploit, read instructions carefully
+the github location to .exe for is given
+9. Follow to link and download .exe exploit
+10. deploy it into the target and execute it. It gives us ADMIN shell
+
+Alternate exploit. 
+
+MS16-032 => this was suggested by sherlock.ps1 => we need powershell to execute it
+
+Use below link or watch IPPSEC video to use this exploit properly
+
+https://github.com/EmpireProject/Empire/blob/master/data/module_source/privesc/Invoke-MS16032.ps1#L44

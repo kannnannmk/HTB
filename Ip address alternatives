@@ -1,0 +1,12 @@
+hostname -i
+ip addr show
+/sbin/ifconfig eth0
+
+
+Try searching for them:
+
+find / -name ifconfig 2>/dev/null
+
+If they're there then just update your path variable:
+
+export PATH=$PATH:/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/game

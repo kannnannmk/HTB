@@ -1,3 +1,14 @@
 tftp>get \PROGRA~1\MICROS~1\MSSQL1~1.SQL\MSSQL\Backup\master.mdf
 
 0x0200318835DF285D7508DB55BFABEF7B373E27D3ABDEADF9 53C3035F45237D08A00B1DFFB3A936128BB508B9D799777526 F11BE65AB12F9D2A453FE18989D75F91369E0E4288
+
+
+
+Go back to RALPH machine (as it has a similar service running). Add an ADMIN user and rdp to it. You can convert the required path to 8.3 notation using a certain command in your command prompt in RALPH.
+
+Refer to https://stackoverflow.com/questions/...-using-cmd-exe
+Refer to https://www.youtube.com/watch?v=JpH77H20jg8&t=141s to learn more about the backup process
+
+Note: DO NOT CONVERT THE REQUIRED PATH IN YOUR BASE OS AS YOU'LL GET THE NOTATION WRONG (BECAUSE THERE MIGHT BE MANY INSTANCE OF "MICROSOFT" IN YOUR BASE OS )
+
+Refer to https://en.wikipedia.org/wiki/8.3_fi...irectory_table to understand what I mean

@@ -4,6 +4,8 @@ tftp>get \PROGRA~1\MICROS~1\MSSQL1~1.SQL\MSSQL\Backup\master.mdf
 
 
 
+If you research the github page of the powershell script, you'll notice that the author has made changes to the first few lines of the script. If you're trying on the base OS I dont think it will work (It did not work for me). So install powershell in your Kali and run it. Also try researching more into the Add Type cmdlet. These are all the things you need to extract the hashes from the mdf file. Also make sure that your hashcat is atleast version 6.1.0 for cracking the hashes. You'll probable hate yourself after finding out a very simple password (very closely related to the service)
+
 Go back to RALPH machine (as it has a similar service running). Add an ADMIN user and rdp to it. You can convert the required path to 8.3 notation using a certain command in your command prompt in RALPH.
 
 Refer to https://stackoverflow.com/questions/...-using-cmd-exe
@@ -11,4 +13,4 @@ Refer to https://www.youtube.com/watch?v=JpH77H20jg8&t=141s to learn more about 
 
 Note: DO NOT CONVERT THE REQUIRED PATH IN YOUR BASE OS AS YOU'LL GET THE NOTATION WRONG (BECAUSE THERE MIGHT BE MANY INSTANCE OF "MICROSOFT" IN YOUR BASE OS )
 
-Refer to https://en.wikipedia.org/wiki/8.3_fi...irectory_table to understand what I mean
+Refer to https://en.wikipedia.org/wiki/8.3_filename#Directory_table to understand what I mean

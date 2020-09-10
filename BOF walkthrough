@@ -1,0 +1,21 @@
+1. OS requirement and tool requirement
+   1. Windows 10/8/7 where application is running.
+      Tools - Immunity debuger
+   2. Kali linux
+       Python script for fuzzing
+       
+ 2. Run the application, attach process to Immunity debugger.
+    1. Immunity is in paused state, click button to run it.
+    2. While it is running, send fuzzing python script containg payload (Say 5000 or 3000)
+    3. Make sure the application crashed and immunity debugger paused
+    4. Now send unique byters of 3000 or 5000, to find the EIP register address (unique string can be create using pattern create)
+    5. We have found maxium size of ESP is 524
+  
+ 3. Fill EIP memory
+      1. Fuzz with 524 * A + B * 4 + c * (random number)  --> random number = 3000 - 524 - 4 --> not sure if this is required.
+      2. Check if EIP is filled with B (42)
+      3. Now we have found EIP filled with B
+      4. Rest of the space filled with 
+      
+    
+  

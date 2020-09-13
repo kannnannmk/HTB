@@ -1,0 +1,15 @@
+Mandatory commands
+1. nmap -sC -sV <target>
+2. nmap -p- <target>
+3. nmap -sU -sV <target>
+4. nmap -p 1-10000 <target> 
+5. nmap -p 22,25,119,110,111,2049,4555 -sV -reason --dns server <target>   #find service verison of all ports
+
+If the port doesn't provide the service version number run the below scan which specific to service 
+(Refer to beta - 10.11.1.72, james apache HTTP)
+6. nmap --script smtp-commands.nse -pT:4555,25 -sV <Target IP>Vu
+
+Vulnerability scanning commands:
+1. nmap --script=vuln 10.11.1.75
+2. nmap --script smb-vuln* -p 445 10.11.1.5 (SMB vulnerability scanning)
+3. 

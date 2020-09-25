@@ -7,7 +7,7 @@ Mandatory commands
 
 6. All 1000 scanned ports on 10.10.10.74 are filtered
    Then go for
-      All 1000 scanned ports on 10.10.10.74 are filtered
+      nmap -sT -p- --min-rate 5000 --max-retries 1 10.10.10.74
 
 If the port doesn't provide the service version number run the below scan which specific to service 
 (Refer to beta - 10.11.1.72, james apache HTTP)

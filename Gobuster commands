@@ -1,3 +1,1 @@
-1. gobuster dir -u http://10.10.10.60 -w /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt -x php,txt -s 200,204 -t 20
- remote -x command if required
- remove -s command if reuired
+gobuster dir -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -u https://10.10.10.60 -k -x php,txt,conf

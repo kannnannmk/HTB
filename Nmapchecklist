@@ -1,17 +1,18 @@
 Mandatory commands
 1. nmap -sC -sV <target>
 2. nmap -p- <target>
-3. nmap -sU -sV <target>
-4. nmap -p 1-10000 <target> 
-5. nmap -p 22,25,119,110,111,2049,4555 -sV -reason --dns server <target>   #find service verison of all ports
+4. nmap -A <target>
+5. nmap -sU -sV <target>
+6. nmap -p 1-10000 <target> 
+7. nmap -p 22,25,119,110,111,2049,4555 -sV -reason --dns server <target>   #find service verison of all ports
 
-6. All 1000 scanned ports on 10.10.10.74 are filtered
+8. All 1000 scanned ports on 10.10.10.74 are filtered
    Then go for
       nmap -sT -p- -min-rate 5000 --max-retries 1 10.10.10.74
 
 If the port doesn't provide the service version number run the below scan which specific to service 
 (Refer to beta - 10.11.1.72, james apache HTTP)
-6. nmap --script smtp-commands.nse -pT:4555,25 -sV <Target IP>Vu
+9. nmap --script smtp-commands.nse -pT:4555,25 -sV <Target IP>Vu
 
 Vulnerability scanning commands:
 1. nmap --script=vuln 10.11.1.75

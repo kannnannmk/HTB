@@ -1,8 +1,8 @@
 Mandatory commands
 1. nmap -sC -sV <target>
 2. nmap -p- <target>
-3. nmap -p- 10.10.10.76 --max-retries 1 => Reduce scanning time
-nmap -p- 10.10.10.76 --max-retries 0 =>  Scan faster
+3. nnmap -p- 10.10.10.76 --max-retries 1 -sV => Reduce scanning time
+nmap -p- 10.10.10.76 --max-retries 0 -sV =>  Scan faster
 4. nmap -A <target>
 5. nmap -sU -sV <target>
 6. nmap -p 1-10000 <target> 

